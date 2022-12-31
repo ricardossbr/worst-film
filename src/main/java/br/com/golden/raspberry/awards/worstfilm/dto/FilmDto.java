@@ -12,15 +12,15 @@ public class FilmDto {
     @CsvBindByPosition(position = 0)
     private String year;
     @CsvBindByPosition(position = 1)
-    private String filmName;
+    private String title;
     @CsvBindByPosition(position = 2)
     private String studio;
     @CsvBindByPosition(position = 3)
-    private String directors;
+    private String producer;
     @CsvBindByPosition(position = 4)
-    private String worstFilmWinner;
+    private String winner;
 
-    public boolean getWorstFilmWinner() {
-        return worstFilmWinner.toLowerCase().equals("yes");
+    public boolean getWinner() {
+        return winner.equalsIgnoreCase("yes");
     }
 }

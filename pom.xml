@@ -15,6 +15,7 @@
 	<description>This application is responsible for reading the external file and showing the  lots of information about this data.</description>
 	<properties>
 		<java.version>11</java.version>
+		<org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -60,25 +61,42 @@
 			<version>5.7.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
-		<pluginManagement>
-			<plugins>
+		<plugins>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
 					<configuration>
-						<excludes>
-							<exclude>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.mapstruct</groupId>
+								<artifactId>mapstruct-processor</artifactId>
+								<version>${org.mapstruct.version}</version>
+							</path>
+							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
-							</exclude>
-						</excludes>
+								<version>${lombok.version}</version>
+							</path>
+						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
-			</plugins>
-		</pluginManagement>
+		</plugins>
 	</build>
 
 </project>
