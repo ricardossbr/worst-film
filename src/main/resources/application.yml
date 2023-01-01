@@ -1,3 +1,6 @@
+
+file: files/
+
 # H2
 spring:
   datasource:

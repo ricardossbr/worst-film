@@ -5,7 +5,7 @@ import br.com.golden.raspberry.awards.worstfilm.model.FilmModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public  abstract class FilmMapper {
     public static final FilmMapper INSTANCE = Mappers.getMapper(FilmMapper.class);
 

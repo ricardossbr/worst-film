@@ -1,6 +1,7 @@
 package br.com.golden.raspberry.awards.worstfilm.service;
 
 import br.com.golden.raspberry.awards.worstfilm.dto.FilmDto;
+import br.com.golden.raspberry.awards.worstfilm.exception.NoSuchFileCSVException;
 import br.com.golden.raspberry.awards.worstfilm.mapper.FilmMapper;
 import br.com.golden.raspberry.awards.worstfilm.model.FilmModel;
 import br.com.golden.raspberry.awards.worstfilm.repository.FilmRepository;
@@ -23,17 +24,23 @@ public class FilmsService {
 
 
     public List<FilmModel>  saveFilmInDatabase(){
-        final List<FilmDto> filmDto = resourcesService.getFilmDtoFromCSV();
-        final List<FilmModel> filmsModel = new ArrayList<>();
-        filmDto.stream()
-                .parallel()
-                .forEach(dto -> {
-                    //log.info("Current film being saved in database: " + dto);
-                    filmsModel.add(saveFilm(FilmMapper.INSTANCE.toFilmModel(dto)));
+       try {
+           final List<FilmDto> filmDto = resourcesService.getFilmDtoFromCSV();
+           final List<FilmModel> filmsModel = new ArrayList<>();
+           filmDto.stream()
+                   .parallel()
+                   .forEach(dto -> {
+                       //log.info("Current film being saved in database: " + dto);
+                       filmsModel.add(saveFilm(FilmMapper.INSTANCE.toFilmModel(dto)));
 
-                });
-        getFilmWithInterval();
-        return filmsModel;
+                   });
+           getFilmWithInterval();
+           return filmsModel;
+       }catch (NoSuchFileCSVException e){
+           e.printStackTrace();
+           return null;
+       }
+
     }
 
     public Map<String, FilmModel> getFilmWithInterval(){
