@@ -3,7 +3,6 @@ package br.com.golden.raspberry.awards.worstfilm.service;
 import br.com.golden.raspberry.awards.worstfilm.dto.FilmDto;
 import br.com.golden.raspberry.awards.worstfilm.exception.NoSuchFileCSVException;
 import com.opencsv.bean.CsvToBeanBuilder;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,21 +22,21 @@ public class ResourcesService {
     public List<FilmDto> getFilmDtoFromCSV() throws NoSuchFileCSVException {
         try {
             final File file = new File(fileName);
-            final File[] arquivos = file.listFiles();
-            if(Objects.isNull(arquivos)) throw new NoSuchFileCSVException();
-            final List<FilmDto> filmDtos = new ArrayList<>();
-            for (int i = 0; i < arquivos.length; i++){
-                if(arquivos[i].getName().contains(".csv")){
-                    filmDtos.addAll(new CsvToBeanBuilder(new FileReader(arquivos[i]))
+            final File[] files = file.listFiles();
+            if(Objects.isNull(files)) throw new NoSuchFileCSVException();
+            final List<FilmDto> filmsDto = new ArrayList<>();
+            for (int i = 0; i < files.length; i++){
+                if(files[i].getName().contains(".csv")){
+                    filmsDto.addAll(new CsvToBeanBuilder(new FileReader(files[i]))
                             .withSeparator(';')
                             .withType(FilmDto.class)
                             .build()
                             .parse());
                 } else{
-                    log.info("This file is not cvs: {}", arquivos[i]);
+                    log.info("This file is not cvs: {}", files[i]);
                 }
             }
-            return filmDtos;
+            return filmsDto;
 
         } catch (FileNotFoundException e) {
             throw new NoSuchFileCSVException();

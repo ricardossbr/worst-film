@@ -45,19 +45,17 @@ public class FilmsService {
 
     public Map<String, FilmModel> getFilmWithInterval(){
         final List<FilmModel> films = this.repository.findByWinner(true);
-        final List<FilmModel> filmWithInterval = getFilmModels(films);
 
-        filmWithInterval.stream().forEach(log::info);
+        for(FilmModel film : films){
+            final List<FilmModel> collect = films.stream().filter(r -> !r.equals(film) && r.getYear().equals(film.getYear()) )
+                    .collect(Collectors.toList());
+            collect.stream().forEach(log::info);
+        }
+
+        //
+        //films.stream().forEach(log::info);
         //films.stream().forEach(log::info);
         return null;
-    }
-
-    private List<FilmModel> getFilmModels(List<FilmModel> films) {
-        final List<FilmModel> filmWithInterval = new ArrayList<>();
-        for (FilmModel film: films) {
-            filmWithInterval.addAll(films.stream().filter(r -> !r.equals(film) && r.getProducer().equalsIgnoreCase(film.getProducer())).collect(Collectors.toList()));
-        }
-        return filmWithInterval;
     }
 
     private FilmModel saveFilm(FilmModel film) {
