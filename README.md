@@ -45,5 +45,5 @@ If necessary to read more cvs file, put this files in the folder on the project 
 
 ## Links
 #### GET
-`Up is reponsable for reading the cvs file and saving in database.` [Up](#http:localhost:8080/up) <br/>
-`worst-film is reponsable verify the consecutive winners and get longest gap between two consecutive awards. ` [worst-film](#http:localhost:8080/worst-film) <br/>
+`Up is reponsable for reading the cvs file and saving in database.` [Up](http:localhost:8080/up) <br/>
+`worst-film is reponsable verify the consecutive winners and get longest gap between two consecutive awards. ` [worst-film](http:localhost:8080/worst-film) <br/>
