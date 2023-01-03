@@ -53,6 +53,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
 		<dependency>
@@ -61,10 +67,11 @@
 			<version>5.7.1</version>
 		</dependency>
 
+
 		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${org.mapstruct.version}</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -83,11 +90,6 @@
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<annotationProcessorPaths>
-							<path>
-								<groupId>org.mapstruct</groupId>
-								<artifactId>mapstruct-processor</artifactId>
-								<version>${org.mapstruct.version}</version>
-							</path>
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>

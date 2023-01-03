@@ -1,17 +1,15 @@
 package br.com.golden.raspberry.awards.worstfilm.service;
 
 import br.com.golden.raspberry.awards.worstfilm.dto.FilmDto;
+import br.com.golden.raspberry.awards.worstfilm.dto.ResponseDTO;
 import br.com.golden.raspberry.awards.worstfilm.exception.NoSuchFileCSVException;
-import br.com.golden.raspberry.awards.worstfilm.mapper.FilmMapper;
 import br.com.golden.raspberry.awards.worstfilm.model.FilmModel;
 import br.com.golden.raspberry.awards.worstfilm.repository.FilmRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,47 +21,71 @@ public class FilmsService {
     private final FilmRepository repository;
 
 
-    public List<FilmModel>  saveFilmInDatabase(){
-       try {
-           final List<FilmDto> filmDto = resourcesService.getFilmDtoFromCSV();
-           final List<FilmModel> filmsModel = new ArrayList<>();
+    public void  saveFilmInDatabase() throws NoSuchFileCSVException {
+           final List<FilmDto> filmDto = this.resourcesService.getFilmDtoFromCSV();
            filmDto.stream()
                    .parallel()
                    .forEach(dto -> {
-                       //log.info("Current film being saved in database: " + dto);
-                       filmsModel.add(saveFilm(FilmMapper.INSTANCE.toFilmModel(dto)));
+                       final FilmModel film = new FilmModel();
+                       film.setYear(dto.getYear());
+                       film.setTitle(dto.getTitle());
+                       film.setStudio(dto.getStudio());
+                       film.setProducer(dto.getProducer());
+                       film.setWinner(dto.getWinner());
+                       this.saveFilm(film);
 
                    });
-           getFilmWithInterval();
-           return filmsModel;
-       }catch (NoSuchFileCSVException e){
-           e.printStackTrace();
-           return null;
-       }
-
     }
 
-    public Map<String, FilmModel> getFilmWithInterval(){
-        final List<FilmModel> films = this.repository.findByWinner(true);
-
-        for(FilmModel film : films){
-            final List<FilmModel> collect = films.stream().filter(r -> !r.equals(film) && r.getYear().equals(film.getYear()) )
-                    .collect(Collectors.toList());
-            collect.stream().forEach(log::info);
+    public Map<String, List<ResponseDTO>> getWinners(){
+        final List<FilmModel> winnersFilms = this.repository.findAll();
+        Collections.sort(winnersFilms);
+        final List<ResponseDTO> winnersConsecutive = this.getWinnersConsecutive(winnersFilms);
+        final Map<String, List<ResponseDTO>> response = new HashMap<>();
+        if(winnersConsecutive.size() == 0){
+            return response;
         }
-
-        //
-        //films.stream().forEach(log::info);
-        //films.stream().forEach(log::info);
-        return null;
+        final int min = winnersConsecutive.stream().mapToInt(r -> r.getInterval()).min().getAsInt();
+        final int max = winnersConsecutive.stream().mapToInt(r -> r.getInterval()).max().getAsInt();
+        response.put("min",  winnersConsecutive.stream().filter(r -> r.getInterval() == min).collect(Collectors.toList()));
+        response.put("max", winnersConsecutive.stream().filter(r -> r.getInterval() == max).collect(Collectors.toList()) );
+        return response;
     }
 
-    private FilmModel saveFilm(FilmModel film) {
-        return this.repository.save(film);
+    private List<ResponseDTO> getWinnersConsecutive(List<FilmModel> winnersFilms) {
+        final List<ResponseDTO> response = new ArrayList<>();
+        int interval = 0;
+        for(int i = 0; i < winnersFilms.size(); i++){
+            if((i + 1) == winnersFilms.size()) break;
+            final FilmModel currentFilm = winnersFilms.get(i);
+            final FilmModel followingWin = winnersFilms.get((i + 1));
+            if(!currentFilm.isWinner()) {
+                interval++;
+                continue;
+            }
+            if(followingWin.isWinner()) {
+                response.addAll(Arrays.asList(
+                            ResponseDTO.builder()
+                                    .producer(currentFilm.getProducer())
+                                    .interval(interval)
+                                    .previousWin(winnersFilms.get(i).getYear().getYear() - 1)
+                                    .followingWin(winnersFilms.get(i).getYear().getYear() + 1 )
+                                    .build(),
+                            ResponseDTO.builder()
+                                    .producer(followingWin.getProducer())
+                                    .interval(interval)
+                                    .previousWin(winnersFilms.get(i).getYear().getYear() - 1)
+                                    .followingWin(winnersFilms.get(i).getYear().getYear() + 1 )
+                                    .build())
+                );
+                interval = 0;
+            }
+        }
+        return response;
     }
 
-    public List<FilmModel> getFilms(){
-        return this.repository.findAll();
+    private void saveFilm(FilmModel film) {
+        this.repository.save(film);
     }
 
 }

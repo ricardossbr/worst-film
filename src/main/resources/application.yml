@@ -18,3 +18,9 @@ spring:
       settings:
         web-allow-others: false
         trace: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG

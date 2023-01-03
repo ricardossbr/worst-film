@@ -28,14 +28,15 @@ public class ResourcesService {
             for (int i = 0; i < files.length; i++){
                 if(files[i].getName().contains(".csv")){
                     filmsDto.addAll(new CsvToBeanBuilder(new FileReader(files[i]))
-                            .withSeparator(';')
-                            .withType(FilmDto.class)
-                            .build()
-                            .parse());
+                                    .withSeparator(';')
+                                    .withType(FilmDto.class)
+                                    .build()
+                                    .parse());
                 } else{
                     log.info("This file is not cvs: {}", files[i]);
                 }
             }
+            filmsDto.removeIf(n -> n.getYear().contains("year"));
             return filmsDto;
 
         } catch (FileNotFoundException e) {
